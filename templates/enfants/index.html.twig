@@ -21,6 +21,7 @@
                             <th>Nom</th>
                             <th>Prenom</th>
                             <th>Naissance</th>
+                            <th>Equipe</th>
                             <th>actions</th>
                         </tr>
                     </thead>
@@ -31,6 +32,8 @@
                             <td>{{ enfant.Nom }}</td>
                             <td>{{ enfant.Prenom }}</td>
                             <td>{{ enfant.Naissance ? enfant.Naissance|date('Y-m-d') : '' }}</td>
+                            <td>{{ enfant.equipe }}</td>
+                            {# {{dump(enfant)}} #}
                             <td>
                                 <a href="{{ path('enfants_show', {'id': enfant.id}) }}">show</a>
                                 <a href="{{ path('enfants_edit', {'id': enfant.id}) }}">edit</a>
