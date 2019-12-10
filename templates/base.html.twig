@@ -188,10 +188,30 @@
                {% if is_granted('ROLE_ADMINISTRATOR') %}
     
           <li class="nav-item">
-            <a href="pages/widgets.html" class="nav-link">
+            <a href="{{ path('enfants_index') }}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
-                Widgets
+                Enfants         
+                
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ path('equipe_index') }}" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Equipes
+
+                
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ path('planning_index') }}" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Tournoi
+              
                 
               </p>
             </a>
