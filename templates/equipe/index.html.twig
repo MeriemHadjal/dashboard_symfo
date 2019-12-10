@@ -10,6 +10,7 @@
             <tr>
                 <th>Id</th>
                 <th>Nom</th>
+                <th>Enfants</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -18,6 +19,9 @@
             <tr>
                 <td>{{ equipe.id }}</td>
                 <td>{{ equipe.Nom }}</td>
+                {# pour afficher le nombre d'enfants #}
+                <td>{{ equipe.enfants|length }}</td>
+                {# {{dump(equipe)}} ceci est l'équivalent du var_dump #}
                 <td>
                     <a href="{{ path('equipe_show', {'id': equipe.id}) }}">show</a>
                     <a href="{{ path('equipe_edit', {'id': equipe.id}) }}">edit</a>
