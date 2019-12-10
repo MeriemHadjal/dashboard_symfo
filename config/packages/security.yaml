@@ -26,12 +26,18 @@ security:
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
-
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
+        #- { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+
+        #toutes les personnes qui ne sont pas connectées doivent se logger
+        #la page login est accessible à tout le monde
+        - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        - { path: ^/.*, role: ROLE_USER }
+    #toutes les pages ont besoin d'un utilisateur connecté avec un role user 
