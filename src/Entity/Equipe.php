@@ -24,18 +24,19 @@ class Equipe
     private $Nom;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Enfants", mappedBy="equipe", cascade={"persist", "remove"})
-     */
-    private $enfants;
-
-    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Planning", inversedBy="equipes")
      */
     private $planning;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Enfants", mappedBy="equipe", orphanRemoval=true)
+     */
+    private $enfants;
+
     public function __construct()
     {
         $this->planning = new ArrayCollection();
+        $this->enfants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -51,23 +52,6 @@ class Equipe
     public function setNom(string $Nom): self
     {
         $this->Nom = $Nom;
-
-        return $this;
-    }
-
-    public function getEnfants(): ?Enfants
-    {
-        return $this->enfants;
-    }
-
-    public function setEnfants(Enfants $enfants): self
-    {
-        $this->enfants = $enfants;
-
-        // set the owning side of the relation if necessary
-        if ($enfants->getEquipe() !== $this) {
-            $enfants->setEquipe($this);
-        }
 
         return $this;
     }
@@ -98,6 +82,37 @@ class Equipe
     {
         if ($this->planning->contains($planning)) {
             $this->planning->removeElement($planning);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Enfants[]
+     */
+    public function getEnfants(): Collection
+    {
+        return $this->enfants;
+    }
+
+    public function addEnfant(Enfants $enfant): self
+    {
+        if (!$this->enfants->contains($enfant)) {
+            $this->enfants[] = $enfant;
+            $enfant->setEquipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEnfant(Enfants $enfant): self
+    {
+        if ($this->enfants->contains($enfant)) {
+            $this->enfants->removeElement($enfant);
+            // set the owning side to null (unless already changed)
+            if ($enfant->getEquipe() === $this) {
+                $enfant->setEquipe(null);
+            }
         }
 
         return $this;

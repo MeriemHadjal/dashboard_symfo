@@ -34,10 +34,11 @@ class Enfants
     private $Naissance;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Equipe", inversedBy="enfants", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Equipe", inversedBy="enfants")
      * @ORM\JoinColumn(nullable=false)
      */
     private $equipe;
+
 
     public function __construct()
     {
@@ -85,12 +86,17 @@ class Enfants
         return $this;
     }
 
+    public function __toString()
+    {
+        return $this->getNom();
+    }
+
     public function getEquipe(): ?Equipe
     {
         return $this->equipe;
     }
 
-    public function setEquipe(Equipe $equipe): self
+    public function setEquipe(?Equipe $equipe): self
     {
         $this->equipe = $equipe;
 
