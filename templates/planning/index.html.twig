@@ -13,7 +13,6 @@
 				<th>Lieu</th>
 				<th>DateDebut</th>
 				<th>DateFin</th>
-				<th>PlacesDisponibles</th>
 				<th>Equipe</th>
 				<th>actions</th>
 			</tr>
@@ -25,7 +24,6 @@
 					<td>{{ planning.lieu }}</td>
 					<td>{{ planning.DateDebut ? planning.DateDebut|date('Y-m-d') : '' }}</td>
 					<td>{{ planning.DateFin ? planning.DateFin|date('Y-m-d') : '' }}</td>
-					<td>{{ planning.placesDisponibles }}</td>
 					<td>
 						{% for equipe in planning.equipes %}
 							{# {{dump(planning.equipes)}} #}

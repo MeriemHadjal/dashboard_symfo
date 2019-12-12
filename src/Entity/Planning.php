@@ -34,11 +34,6 @@ class Planning
     private $DateFin;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $placesDisponibles;
-
-    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Equipe", mappedBy="planning")
      * 
      */
@@ -86,18 +81,6 @@ class Planning
     public function setDateFin(\DateTimeInterface $DateFin): self
     {
         $this->DateFin = $DateFin;
-
-        return $this;
-    }
-
-    public function getPlacesDisponibles(): ?int
-    {
-        return $this->placesDisponibles;
-    }
-
-    public function setPlacesDisponibles(?int $placesDisponibles): self
-    {
-        $this->placesDisponibles = $placesDisponibles;
 
         return $this;
     }

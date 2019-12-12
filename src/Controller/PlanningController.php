@@ -94,4 +94,33 @@ class PlanningController extends AbstractController
 
         return $this->redirectToRoute('planning_index');
     }
+
+    /**
+     * @Route("/email/{id}", name="planning_email")
+     */
+    public function email(Request $request, Planning $planning, \Swift_Mailer $mailer)
+    {
+
+        $name = 'Meriem';
+
+        $message = (new \Swift_Message('Prochain Tournoi'))
+            ->setFrom('entraineur@footclub.fr')
+            ->setTo('parent@to.fr')
+            ->setBody(
+                $this->renderView(
+                    // templates/emails/registration.html.twig
+                    'emails/tournois.html.twig',
+                    ['name' => $name]
+                ),
+                'text/html'
+            )
+        ;
+
+        $mailer->send($message);
+        
+        return $this->render('planning/show.html.twig', [
+            'planning' => $planning,
+        ]);
+    }
+
 }
