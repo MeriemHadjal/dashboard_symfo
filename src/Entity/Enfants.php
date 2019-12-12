@@ -39,6 +39,12 @@ class Enfants
      */
     private $equipe;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="enfants")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $user;
+
 
     public function __construct()
     {
@@ -99,6 +105,18 @@ class Enfants
     public function setEquipe(?Equipe $equipe): self
     {
         $this->equipe = $equipe;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

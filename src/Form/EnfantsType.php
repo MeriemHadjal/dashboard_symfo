@@ -16,7 +16,10 @@ class EnfantsType extends AbstractType
             ->add('Prenom')
             ->add('Naissance')
             ->add('equipe')
+            ->add('user')
+
         ;
+        
     }
 
     public function configureOptions(OptionsResolver $resolver)

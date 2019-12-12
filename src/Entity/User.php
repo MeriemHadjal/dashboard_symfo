@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -52,6 +54,16 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      */
     private $telephone;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Enfants", mappedBy="user", orphanRemoval=true)
+     */
+    private $enfants;
+
+    public function __construct()
+    {
+        $this->enfants = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -177,5 +189,41 @@ class User implements UserInterface
         $this->telephone = $telephone;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Enfants[]
+     */
+    public function getEnfants(): Collection
+    {
+        return $this->enfants;
+    }
+
+    public function addEnfant(Enfants $enfant): self
+    {
+        if (!$this->enfants->contains($enfant)) {
+            $this->enfants[] = $enfant;
+            $enfant->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEnfant(Enfants $enfant): self
+    {
+        if ($this->enfants->contains($enfant)) {
+            $this->enfants->removeElement($enfant);
+            // set the owning side to null (unless already changed)
+            if ($enfant->getUser() === $this) {
+                $enfant->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->getNom().' '.$this->getPrenom();
     }
 }

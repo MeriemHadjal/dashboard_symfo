@@ -103,21 +103,23 @@ class PlanningController extends AbstractController
 
         $name = 'Meriem';
 
-        $message = (new \Swift_Message('Prochain Tournoi'))
-            ->setFrom('entraineur@footclub.fr')
-            ->setTo('parent@to.fr')
-            ->setBody(
-                $this->renderView(
-                    // templates/emails/registration.html.twig
-                    'emails/tournois.html.twig',
-                    ['name' => $name]
-                ),
-                'text/html'
-            )
-        ;
-
-        $mailer->send($message);
         
+
+        // // $message = (new \Swift_Message('Prochain Tournoi'))
+        // //     ->setFrom('entraineur@footclub.fr')
+        // //     ->setTo('parent@to.fr')
+        // //     ->setBody(
+        // //         $this->renderView(
+        // //             // templates/emails/registration.html.twig
+        // //             'emails/tournois.html.twig',
+        // //             ['name' => $name]
+        // //         ),
+        // //         'text/html'
+        // //     )
+        // // ;
+
+        // $mailer->send($message);
+
         return $this->render('planning/show.html.twig', [
             'planning' => $planning,
         ]);
