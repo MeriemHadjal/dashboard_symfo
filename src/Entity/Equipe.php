@@ -25,11 +25,20 @@ class Equipe
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Planning", inversedBy="equipes")
+     * @ORM\JoinTable(name="equipe_planning",
+     *   joinColumns={
+     *     @ORM\JoinColumn(name="equipe_id", referencedColumnName="id")
+     *   },
+     *   inverseJoinColumns={
+     *     @ORM\JoinColumn(name="planning_id", referencedColumnName="id")
+     *   }
+     * )
      */
     private $planning;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Enfants", mappedBy="equipe", orphanRemoval=true)
+     * 
      */
     private $enfants;
 

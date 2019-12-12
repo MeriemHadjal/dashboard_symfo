@@ -40,6 +40,7 @@ class Planning
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Equipe", mappedBy="planning")
+     * 
      */
     private $equipes;
 
@@ -113,6 +114,7 @@ class Planning
     {
         if (!$this->equipes->contains($equipe)) {
             $this->equipes[] = $equipe;
+            
             $equipe->addPlanning($this);
         }
 

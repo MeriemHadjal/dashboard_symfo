@@ -16,7 +16,9 @@ class PlanningType extends AbstractType
             ->add('DateDebut')
             ->add('DateFin')
             ->add('placesDisponibles')
-            ->add('equipes')
+            ->add('equipes', null,
+                array('by_reference' => false,)
+            )
         ;
     }
 
