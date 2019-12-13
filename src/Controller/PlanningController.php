@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Planning;
+use App\Entity\User;
 use App\Form\PlanningType;
 use App\Repository\PlanningRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -102,27 +103,43 @@ class PlanningController extends AbstractController
     {
 
         $name = 'Meriem';
+        // on charge la librairie doctrine et on fait appelle au manager de la librairie doctrine
+        $em = $this->getDoctrine()->getManager();
+        // on souhaite charger l'entité "planning" et on fait appelle à notre méthode (fonction query builder customiser)
+        // em = entitté manager
+        $datas = $em->getRepository(User::class)->findAllEmailFromUserToPlanning($planning->getId());
 
-        
+        $message = (new \Swift_Message('Prochain Tournoi'))
+            ->setFrom('entraineur@footclub.fr')
+            ->setTo('parent@to.fr')
+            ->setBody(
+                $this->renderView(
+                    // templates/emails/registration.html.twig
+                    'emails/tournois.html.twig',
+                    ['name' => $name]
+                ),
+                'text/html'
+            )
+        ;
 
-        // // $message = (new \Swift_Message('Prochain Tournoi'))
-        // //     ->setFrom('entraineur@footclub.fr')
-        // //     ->setTo('parent@to.fr')
-        // //     ->setBody(
-        // //         $this->renderView(
-        // //             // templates/emails/registration.html.twig
-        // //             'emails/tournois.html.twig',
-        // //             ['name' => $name]
-        // //         ),
-        // //         'text/html'
-        // //     )
-        // // ;
+        foreach($datas AS $data){
+            // dump($data);
+            $message->setTo($data['email']);
+            $mailer->send($message);
+        }
 
-        // $mailer->send($message);
 
         return $this->render('planning/show.html.twig', [
             'planning' => $planning,
         ]);
     }
 
+    
+    /**
+     * @Route("/participation/{id}", name="planning_participation")
+     */
+    public function participation(Request $request, Planning $planning )
+    {
+        return $this->render('planning/participation.html.twig');
+    }
 }

@@ -53,15 +53,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
     */
 
-    /*
-    public function findOneBySomeField($value): ?User
+  
+    public function findAllEmailFromUserToPlanning($value): ?Array
     {
+
+        // SELECT `email`
+        // FROM `user`
+        // LEFT JOIN `enfants`  ON user.id = enfants.user_id
+        // LEFT JOIN `equipe` ON equipe.id = enfants.equipe_id 
+        // LEFT JOIN `equipe_planning` ON equipe_planning.equipe_id = equipe.id
+        // LEFT JOIN `planning` ON equipe_planning.planning_id = planning.id 
+        // WHERE `planning`.id = 3; 
+
         return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
+            ->select('u.email')
+            ->leftJoin('u.enfants', 'e')
+            // 'e' est un alias de enfants
+            ->leftJoin('e.equipe', 'eq')
+            ->leftJoin('eq.planning', 'p')
+            ->andWhere('p.id = :val')
             ->setParameter('val', $value)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
     }
-    */
+ 
 }
