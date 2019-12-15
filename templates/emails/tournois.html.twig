@@ -1,5 +1,6 @@
 <html>
     <body>
         développement coucou {{ name }}
+        <a href="{{ app.request.getBaseURL() }}{{ path('planning_participation', {'id': planning.id}) }}">lien inscription</a>
     </body>
 </html>
