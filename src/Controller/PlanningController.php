@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Enfants;
 use App\Entity\Planning;
 use App\Entity\PlanningResponse;
 use App\Entity\User;
@@ -121,7 +122,10 @@ class PlanningController extends AbstractController
                 $this->renderView(
                     // templates/emails/registration.html.twig
                     'emails/tournois.html.twig',
-                    ['name' => $name]
+                    [
+                        'planning' => $planning,
+                        'name' => $name
+                    ]
                 ),
                 'text/html'
             );
@@ -143,12 +147,18 @@ class PlanningController extends AbstractController
      * @Route("/participation/{id}", name="planning_participation")
      */
     public function participation(Request $request, Planning $planning)
-    // $request = tout ce que reçoit le navigateur comme variable et autres osit tout le projet
+    // $request = tout ce que reçoit le navigateur comme variable et autres soit tout le projet
     {
         $planningResponse = new PlanningResponse;
 
+        $em = $this->getDoctrine()->getManager();
+        // on souhaite charger l'entité "enfants" et on fait appelle à notre méthode (fonction query builder customiser) pour récupérer les enfants
+        // em = entité manager
+        $listes_enfants = $em->getRepository(Enfants::class)->findEnfantsByPlanningUser($this->getUser()->getId(), $planning->getId());
+        // cf EnfantsRepository
+
         // creates a task object and initializes some data for this example
-        $form = $this->createFormBuilder($planningResponse)
+        $formBuilder = $this->createFormBuilder($planningResponse)
             ->add('placeDisponible')
 
             //Champ customisé pour permettre le choix du jour 1
@@ -166,9 +176,24 @@ class PlanningController extends AbstractController
                 'mapped' => false,
                 //La checkbox n'est pas obligatoire, le required est à false
                 'required' => false
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Create Task'])
-            ->getForm();
+            ]);
+        // ici autant d'input qu'il y a d'enfants
+        foreach($listes_enfants AS $enfant){
+            $formBuilder->add('enfant_jour1_'.$enfant->getId(), CheckboxType::class, [
+                'mapped' => false,
+                //La checkbox n'est pas obligatoire, le required est à false
+                'required' => false
+            ]);
+            $formBuilder->add('enfant_jour2_'.$enfant->getId(), CheckboxType::class, [
+                'mapped' => false,
+                //La checkbox n'est pas obligatoire, le required est à false
+                'required' => false
+            ]);
+        }
+            
+        $formBuilder
+            ->add('save', SubmitType::class, ['label' => 'Create Task']);
+        $form = $formBuilder->getForm();
 
 
         $form->handleRequest($request);
@@ -180,11 +205,21 @@ class PlanningController extends AbstractController
             $task->setPlanning($planning);
             // on ajoute également la valeur du user connecté
             $task->setUser($this->getUser());
+            // on verifie la présence des parents
             $jour1 = $form->get('jour1')->getData();
             $jour2 = $form->get('jour2')->getData();
-            $present =['j1'=>$jour1 ,'j2'=> $jour2];
+            $present =['j1' => $jour1 ,'j2' => $jour2];
             $task->setPresent($present);
-            
+            // on vérifie la présence des enfants
+            $enfants_present = [];
+            foreach($listes_enfants AS $enfant){
+                $jour1e = $form->get('enfant_jour1_'.$enfant->getId())->getData();
+                $jour2e = $form->get('enfant_jour2_'.$enfant->getId())->getData();
+
+                $enfants_present[$enfant->getId()] = ['j1'=>$jour1e ,'j2'=> $jour2e];
+            }
+            $task->setEnfants($enfants_present);
+
             // ... perform some action, such as saving the task to the database
             // for example, if Task is a Doctrine entity, save it!
             $entityManager = $this->getDoctrine()->getManager();

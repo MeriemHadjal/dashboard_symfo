@@ -47,4 +47,18 @@ class EnfantsRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findEnfantsByPlanningUser($user, $planning): ?Array
+    {
+        return $this->createQueryBuilder('e')
+        ->leftJoin('e.equipe', 'eq')
+        ->leftJoin('eq.planning', 'p')
+        ->andWhere('e.user = :val')
+        ->andWhere('p.id = :idplanning')
+        ->setParameter('val', $user)
+        ->setParameter('idplanning', $planning)
+        ->getQuery()
+        ->getResult()
+    ;
+    }
 }
