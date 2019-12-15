@@ -39,9 +39,15 @@ class Planning
      */
     private $equipes;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PlanningResponse", mappedBy="planning")
+     */
+    private $planningResponses;
+
     public function __construct()
     {
         $this->equipes = new ArrayCollection();
+        $this->planningResponses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,6 +115,37 @@ class Planning
         if ($this->equipes->contains($equipe)) {
             $this->equipes->removeElement($equipe);
             $equipe->removePlanning($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PlanningResponse[]
+     */
+    public function getPlanningResponses(): Collection
+    {
+        return $this->planningResponses;
+    }
+
+    public function addPlanningResponse(PlanningResponse $planningResponse): self
+    {
+        if (!$this->planningResponses->contains($planningResponse)) {
+            $this->planningResponses[] = $planningResponse;
+            $planningResponse->setPlanning($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlanningResponse(PlanningResponse $planningResponse): self
+    {
+        if ($this->planningResponses->contains($planningResponse)) {
+            $this->planningResponses->removeElement($planningResponse);
+            // set the owning side to null (unless already changed)
+            if ($planningResponse->getPlanning() === $this) {
+                $planningResponse->setPlanning(null);
+            }
         }
 
         return $this;

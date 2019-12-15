@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Planning;
+use App\Entity\PlanningResponse;
 use App\Entity\User;
 use App\Form\PlanningType;
 use App\Repository\PlanningRepository;
@@ -11,6 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
  * @Route("/planning")
@@ -87,7 +92,7 @@ class PlanningController extends AbstractController
      */
     public function delete(Request $request, Planning $planning): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$planning->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $planning->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($planning);
             $entityManager->flush();
@@ -119,10 +124,9 @@ class PlanningController extends AbstractController
                     ['name' => $name]
                 ),
                 'text/html'
-            )
-        ;
+            );
 
-        foreach($datas AS $data){
+        foreach ($datas as $data) {
             // dump($data);
             $message->setTo($data['email']);
             $mailer->send($message);
@@ -134,12 +138,64 @@ class PlanningController extends AbstractController
         ]);
     }
 
-    
+
     /**
      * @Route("/participation/{id}", name="planning_participation")
      */
-    public function participation(Request $request, Planning $planning )
+    public function participation(Request $request, Planning $planning)
+    // $request = tout ce que reçoit le navigateur comme variable et autres osit tout le projet
     {
-        return $this->render('planning/participation.html.twig');
+        $planningResponse = new PlanningResponse;
+
+        // creates a task object and initializes some data for this example
+        $form = $this->createFormBuilder($planningResponse)
+            ->add('placeDisponible')
+
+            //Champ customisé pour permettre le choix du jour 1
+            ->add('jour1', CheckboxType::class, [
+                'label' => 'Jour 1',
+                //Ignore le champ customisé et non définit dans l'entité
+                'mapped' => false,
+                //La checkbox n'est pas obligatoire, le required est à false
+                'required' => false
+            ])
+            //Champ customisé pour permettre le choix du jour 2
+            ->add('jour2', CheckboxType::class, [
+                'label' => 'Jour 2',
+                //Ignore le champ qui est customisé et non définit dans l'entité
+                'mapped' => false,
+                //La checkbox n'est pas obligatoire, le required est à false
+                'required' => false
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Create Task'])
+            ->getForm();
+
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // $form->getData() holds the submitted values
+            // but, the original `$task` variable has also been updated
+            $task = $form->getData();
+            // on ajoute la valeur planning
+            $task->setPlanning($planning);
+            // on ajoute également la valeur du user connecté
+            $task->setUser($this->getUser());
+            $jour1 = $form->get('jour1')->getData();
+            $jour2 = $form->get('jour2')->getData();
+            $present =['j1'=>$jour1 ,'j2'=> $jour2];
+            $task->setPresent($present);
+            
+            // ... perform some action, such as saving the task to the database
+            // for example, if Task is a Doctrine entity, save it!
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($task);
+            $entityManager->flush();
+
+            // return $this->redirectToRoute('task_success');
+        }
+
+        return $this->render('planning/participation.html.twig', [
+            'form'=>$form->createView()
+        ]);
     }
 }

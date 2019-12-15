@@ -60,9 +60,15 @@ class User implements UserInterface
      */
     private $enfants;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PlanningResponse", mappedBy="user", orphanRemoval=true)
+     */
+    private $planningResponses;
+
     public function __construct()
     {
         $this->enfants = new ArrayCollection();
+        $this->planningResponses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -225,5 +231,36 @@ class User implements UserInterface
     public function __toString()
     {
         return $this->getNom().' '.$this->getPrenom();
+    }
+
+    /**
+     * @return Collection|PlanningResponse[]
+     */
+    public function getPlanningResponses(): Collection
+    {
+        return $this->planningResponses;
+    }
+
+    public function addPlanningResponse(PlanningResponse $planningResponse): self
+    {
+        if (!$this->planningResponses->contains($planningResponse)) {
+            $this->planningResponses[] = $planningResponse;
+            $planningResponse->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlanningResponse(PlanningResponse $planningResponse): self
+    {
+        if ($this->planningResponses->contains($planningResponse)) {
+            $this->planningResponses->removeElement($planningResponse);
+            // set the owning side to null (unless already changed)
+            if ($planningResponse->getUser() === $this) {
+                $planningResponse->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
